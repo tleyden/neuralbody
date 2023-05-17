@@ -1,6 +1,7 @@
 import numpy as np
 from lib.config import cfg
-from skimage.measure import compare_ssim
+# from skimage.measure import compare_ssim
+from skimage.metrics import structural_similarity
 import os
 import cv2
 from termcolor import colored
@@ -41,7 +42,7 @@ class Evaluator:
             (img_gt[..., [2, 1, 0]] * 255))
 
         # compute the ssim
-        ssim = compare_ssim(img_pred, img_gt, multichannel=True)
+        ssim = structural_similarity(img_pred, img_gt, multichannel=True)
         return ssim
 
     def evaluate(self, output, batch):

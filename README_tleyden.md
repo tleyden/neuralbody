@@ -30,3 +30,66 @@ chumpy
 6a. When running "tools/render_mesh.py", it was missing opengl.  `pip install PyOpenGL`
 
 6b. I hit this same error (https://github.com/zju3dv/neuralbody/issues/94) when running “python tools/render_mesh.py --exp_name female3c --dataset people_snapshot --mesh_ind 226” and I posted my workaround on the issue.  Now I’m hitting “freeglut (foo): failed to open display ‘’” which is most likely due to running on a headless machine
+
+7. I hit the error:
+
+RuntimeError: .../spconv/src/spconv/indice.cu 274
+cuda execution failed with error 3 initialization error
+prepareSubMGridKernel failed
+
+(same as https://github.com/traveller59/spconv/issues/262) 
+
+and tried uninstalling my spconv and reinstalling spconv2 from pip.
+
+8. Hitting error:
+
+```
+$ python run.py --type visualize --cfg_file configs/snapshot_exp/snapshot_f3c.yaml exp_name female3c vis_mesh True train.num_workers 0
+load model: data/trained_model/if_nerf/female3c/latest.pth
+Traceback (most recent call last):
+  File "run.py", line 126, in <module>
+    globals()['run_' + args.type]()
+  File "run.py", line 88, in run_visualize
+    epoch=cfg.test.epoch)
+  File "/home/tleyden/DevLibraries/neuralbody/lib/utils/net_utils.py", line 378, in load_network
+    net.load_state_dict(pretrained_model['net'], strict=strict)
+  File "/opt/miniconda/miniconda3/envs/neuralbody/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1672, in load_state_dict
+    self.__class__.__name__, "\n\t".join(error_msgs)))
+RuntimeError: Error(s) in loading state_dict for Network:
+	size mismatch for xyzc_net.conv0.0.weight: copying a param with shape torch.Size([3, 3, 3, 16, 16]) from checkpoint, the shape in current model is torch.Size([16, 3, 3, 3, 16]).
+	size mismatch for xyzc_net.conv0.3.weight: copying a param with shape torch.Size([3, 3, 3, 16, 16]) from checkpoint, the shape in current model is torch.Size([16, 3, 3, 3, 16]).
+```
+
+This issue might be relevant: https://github.com/zju3dv/neuralbody/issues/121 - it's because I installed spconv2 from pip.
+
+9. I gave up on using the pre-trained model, trying to train a model from scratch.  Hit new error:
+
+```
+$ python train_net.py --cfg_file configs/snapshot_exp/snapshot_f3c.yaml exp_name female3c resume False
+make_network is loading network from:  lib/networks/latent_xyzc.py
+remove contents of directory data/record/if_nerf/female3c
+rm: cannot remove 'data/record/if_nerf/female3c/*': No such file or directory
+Traceback (most recent call last):
+  File "train_net.py", line 108, in <module>
+    main()
+  File "train_net.py", line 104, in main
+    train(cfg, network)
+  File "train_net.py", line 23, in train
+    evaluator = make_evaluator(cfg)
+  File "/home/tleyden/DevLibraries/neuralbody/lib/evaluators/make_evaluator.py", line 16, in make_evaluator
+    return _evaluator_factory(cfg)
+  File "/home/tleyden/DevLibraries/neuralbody/lib/evaluators/make_evaluator.py", line 8, in _evaluator_factory
+    evaluator = imp.load_source(module, path).Evaluator()
+  File "/opt/miniconda/miniconda3/envs/neuralbody/lib/python3.7/imp.py", line 171, in load_source
+    module = _load(spec)
+  File "<frozen importlib._bootstrap>", line 696, in _load
+  File "<frozen importlib._bootstrap>", line 677, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 728, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "lib/evaluators/if_nerf.py", line 3, in <module>
+    from skimage.measure import compare_ssim
+ImportError: cannot import name 'compare_ssim' from 'skimage.measure' (/opt/miniconda/miniconda3/envs/neuralbody/lib/python3.7/site-packages/skimage/measure/__init__.py)
+```
+
+Looks like an api rename issue: https://github.com/williamfzc/stagesepx/issues/150
+

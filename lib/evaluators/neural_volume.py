@@ -1,6 +1,8 @@
 import numpy as np
 from lib.config import cfg
-from skimage.measure import compare_ssim
+# from skimage.measure import compare_ssim
+from skimage.metrics import structural_similarity
+
 import os
 import cv2
 import imageio
@@ -31,7 +33,7 @@ class Evaluator:
         img_pred = img_pred[y:y + h, x:x + w]
         img_gt = img_gt[y:y + h, x:x + w]
         # compute the ssim
-        ssim = compare_ssim(img_pred, img_gt, multichannel=True)
+        ssim = structural_similarity(img_pred, img_gt, multichannel=True)
         return ssim
 
     def evaluate(self, batch):
