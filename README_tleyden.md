@@ -1,6 +1,6 @@
-1. I just did “pip install torch” since I have cuda 11.6 installed on this box
+## 1. I just did “pip install torch” since I have cuda 11.6 installed on this box
 
-2. I got into some PDH, so I changed the requirements.txt file to:
+## 2. I got into some PDH, so I changed the requirements.txt file to:
 
 ```
 open3d>=0.9.0.0
@@ -19,29 +19,47 @@ pyglet==1.4.0b1
 chumpy
 ```
 
-3. I had to comment out a #include line to get spconv to compile, as mentioned here: https://github.com/traveller59/spconv/issues/464#issuecomment-1442055025 🤮
+## 3. Compile spconv hack
 
-4a. To process the data set, it was missing a dependency: `pip install h5py`
+I had to comment out a #include line to get spconv to compile, as mentioned here: https://github.com/traveller59/spconv/issues/464#issuecomment-1442055025 🤮
 
-4b. To process the data set, it was missing some models.  Looks like they can be downloaded from link mentioned here: https://github.com/zju3dv/neuralbody/issues/43#issuecomment-937575241
+## 4a. To process the data set, it was missing a dependency: `pip install h5py`
 
-5. I had to upgrade “pip install --upgrade imageio” to get past this error: https://github.com/danijar/handout/issues/22 when trying to run the “python run.py --type visualize” command.  Now it segfaults.. which might be because I’m on a headless box, or might be for some other reason
+## 4b. Missing models
 
-6a. When running "tools/render_mesh.py", it was missing opengl.  `pip install PyOpenGL`
+To process the data set, it was missing some models.  Looks like they can be downloaded from link mentioned here: https://github.com/zju3dv/neuralbody/issues/43#issuecomment-937575241
 
-6b. I hit this same error (https://github.com/zju3dv/neuralbody/issues/94) when running “python tools/render_mesh.py --exp_name female3c --dataset people_snapshot --mesh_ind 226” and I posted my workaround on the issue.  Now I’m hitting “freeglut (foo): failed to open display ‘’” which is most likely due to running on a headless machine
+## 5. Imageio
 
-7. I hit the error:
+I had to upgrade “pip install --upgrade imageio” to get past this error: https://github.com/danijar/handout/issues/22 when trying to run the “python run.py --type visualize” command.  Now it segfaults.. which might be because I’m on a headless box, or might be for some other reason
 
+## 6a. OpenGL
+
+When running "tools/render_mesh.py", it was missing opengl.  `pip install PyOpenGL`. 
+
+## 6b. Install freeglut3
+
+I hit this same error (https://github.com/zju3dv/neuralbody/issues/94) when running “python tools/render_mesh.py --exp_name female3c --dataset people_snapshot --mesh_ind 226” and I posted my workaround on the issue.  
+
+```
+sudo apt-get install freeglut3-dev
+```
+
+Now I’m hitting “freeglut (foo): failed to open display ‘’” which is most likely due to running on a headless machine
+
+## 7. I hit the spconv error: prepareSubMGridKernel failed
+
+```
 RuntimeError: .../spconv/src/spconv/indice.cu 274
 cuda execution failed with error 3 initialization error
 prepareSubMGridKernel failed
+```
 
 (same as https://github.com/traveller59/spconv/issues/262) 
 
 and tried uninstalling my spconv and reinstalling spconv2 from pip.
 
-8. Hitting error:
+## 8. Hitting error related to spconv1 vs spconv2 behavior:
 
 ```
 $ python run.py --type visualize --cfg_file configs/snapshot_exp/snapshot_f3c.yaml exp_name female3c vis_mesh True train.num_workers 0
@@ -62,7 +80,9 @@ RuntimeError: Error(s) in loading state_dict for Network:
 
 This issue might be relevant: https://github.com/zju3dv/neuralbody/issues/121 - it's because I installed spconv2 from pip.
 
-9. I gave up on using the pre-trained model, trying to train a model from scratch.  Hit new error:
+## 9. Train model from scratch 
+
+I gave up on using the pre-trained model, trying to train a model from scratch.  Hit new error:
 
 ```
 $ python train_net.py --cfg_file configs/snapshot_exp/snapshot_f3c.yaml exp_name female3c resume False
