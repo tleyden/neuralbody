@@ -124,6 +124,7 @@ for i, obj_path in enumerate(obj_files):
     file_name = obj_file[:-4]
 
     if not os.path.exists(obj_path):
+        print("file not exists: {}, skipping".format(obj_path))
         continue
     mesh = trimesh.load(obj_path)
     vertices = mesh.vertices

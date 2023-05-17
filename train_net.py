@@ -36,6 +36,7 @@ def train(cfg, network):
                                     max_iter=cfg.ep_iter)
     val_loader = make_data_loader(cfg, is_train=False)
 
+    print("Training for total epochs: ", cfg.train.epoch)
     for epoch in range(begin_epoch, cfg.train.epoch):
         recorder.epoch = epoch
         if cfg.distributed:
