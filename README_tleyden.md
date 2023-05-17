@@ -93,3 +93,4 @@ ImportError: cannot import name 'compare_ssim' from 'skimage.measure' (/opt/mini
 
 Looks like an api rename issue: https://github.com/williamfzc/stagesepx/issues/150
 
+Training in progress.
