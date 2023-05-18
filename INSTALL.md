@@ -10,16 +10,6 @@ pip install torch==1.4.0+cu100 -f https://download.pytorch.org/whl/torch_stable.
 
 pip install -r requirements.txt
 
-# install spconv
-cd
-git clone https://github.com/traveller59/spconv --recursive
-cd spconv
-git checkout abf0acf30f5526ea93e687e3f424f62d9cd8313a
-git submodule update --init --recursive
-export CUDA_HOME="/usr/local/cuda-10.0"
-python setup.py bdist_wheel
-cd dist
-pip install spconv-1.2.1-cp36-cp36m-linux_x86_64.whl
 ```
 
 ### Set up datasets
