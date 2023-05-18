@@ -16,6 +16,6 @@ chumpy
 
 # See README_tleyden.md
 torch
-spconv-cu116
+spconv-cu116   # <-- change this to match your cuda version!
 h5py
 PyOpenGL
