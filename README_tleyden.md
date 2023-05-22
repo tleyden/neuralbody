@@ -141,6 +141,40 @@ python3 apps/preprocess/extract_keypoints.py data/1v1p_keypoint_test/1v1p/ --mod
 ```
 
 
+## Generate VideoAvatar related metadata files
+
+The PeopleSnapshot dataset contains the following files, which are needed by NeuralBody:
+
+According to [this ticket](https://github.com/zju3dv/neuralbody/issues/42) these files can be generated via [VideoAvatars](https://github.com/thmoa/videoavatars)
+
+### camera.pkl
+
+There is a script to generate this, but how to get the focal distance??
+
+https://github.com/thmoa/videoavatars/blob/master/prepare_data/create_camera.py
+
+### consensus.obj
+
+No idea what this is
+
+### consensus.pkl
+
+No idea what this is
+
+### keypoints.hdf5
+
+Is this generated from MediaPipe?  Any conversion needed?
+
+### masks.hdf5
+
+I believe this is generated from https://github.com/kmaninis/OSVOS-PyTorch or similar.  In the [VideoAvatars paper](https://arxiv.org/pdf/1803.04758.pdf) it mentions:
+
+> Our method relies on a foreground segmentation of the images. Therefore, we adopt the CNN based video segmentation method of [9] and train it with 3-4 manual segmentations per sequence
+
+### reconstructed_poses.hdf5
+
+No idea what this is
+
 ## Generate annots.npy
 
 ```
@@ -181,9 +215,6 @@ params: 'params'
 big_box: True
 ```
 
-## Generate camera.pkl
-
-According to [this ticket](https://github.com/zju3dv/neuralbody/issues/42) that file can be generated via [VideoAvatars](https://github.com/thmoa/videoavatars)
 
 ## Run training
 
