@@ -1,3 +1,5 @@
+# Install
+
 ## 1. I just did “pip install torch” since I have cuda 11.6 installed on this box
 
 ## 2. I got into some PDH, so I changed the requirements.txt file to:
@@ -114,3 +116,79 @@ ImportError: cannot import name 'compare_ssim' from 'skimage.measure' (/opt/mini
 Looks like an api rename issue: https://github.com/williamfzc/stagesepx/issues/150
 
 Training in progress.
+
+# Generate EasyMoCap video
+
+## Generate keypoints via mediapipe
+
+```
+python3 apps/preprocess/extract_keypoints.py data/1v1p_keypoint_test/1v1p/ --mode mp-holistic 
+```
+
+## Generate EasyMocap video
+
+```
+data=<path/to/data>
+python3 apps/demo/mocap.py ${data} --work internet
+```
+
+# Train neuralbody on custom video
+
+## Generate keypoints via mediapipe
+
+```
+python3 apps/preprocess/extract_keypoints.py data/1v1p_keypoint_test/1v1p/ --mode mp-holistic 
+```
+
+
+## Generate annots.npy
+
+```
+python zju_smpl/easymocap_to_neuralbody.py --input_dir /home/tleyden/DevLibraries/EasyMocap/data/1v1p_keypoint_test/1v1p --type annots
+```
+
+After this step, you will have a new annots.npy in the input directory
+
+## Create config file
+
+Duplicate `monocular_custom.yaml` and customize, eg:
+
+```
+task: 'if_nerf'
+gpus: [0]
+
+parent_cfg: 'configs/snapshot_exp/snapshot_f3c.yaml'
+
+train_dataset:
+    data_root: '../EasyMocap/data/1v1p_keypoint_test/1v1p'
+    human: 'custom'
+    ann_file: '../EasyMocap/data/1v1p_keypoint_test/1v1p/annots.npy'
+    split: 'train'
+
+test_dataset:
+    data_root: '../EasyMocap/data/1v1p_keypoint_test/1v1p'
+    human: 'custom'
+    ann_file: '../EasyMocap/data/1v1p_keypoint_test/1v1p/annots.npy'
+    split: 'test'
+
+# data options
+ratio: 1.
+training_view: [0, 6, 12, 18]
+num_train_frame: 300
+smpl: 'smpl'
+vertices: 'vertices'
+params: 'params'
+big_box: True
+```
+
+## Generate camera.pkl
+
+According to [this ticket](https://github.com/zju3dv/neuralbody/issues/42) that file can be generated via [VideoAvatars](https://github.com/thmoa/videoavatars)
+
+## Run training
+
+```
+python train_net.py --cfg_file configs/monocular_1v1p_custom.yaml exp_name 1v1p_keypoint_test_exp
+```
+
+If it fails with `FileNotFoundError: [Errno 2] No such file or directory: '../EasyMocap/data/1v1p_keypoint_test/1v1p/camera.pkl'` you need to generate the file using the VideoAvatars repo.
