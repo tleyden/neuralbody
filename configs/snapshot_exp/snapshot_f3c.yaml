@@ -38,7 +38,7 @@ train:
     lr: 5e-4
     weight_decay: 0
     # epoch: 400 - this will take a long time on my laptop, try a much smaller number just to test end to end
-    epoch: 25
+    epoch: 5
     scheduler:
         type: 'exponential'
         gamma: 0.1
@@ -50,7 +50,7 @@ test:
     collator: ''
 
 ep_iter: 500
-save_ep: 100
+save_ep: 1 # Try to make it save the model more often (was 100)
 eval_ep: 1000
 
 # rendering options
